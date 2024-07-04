@@ -26,7 +26,8 @@ public class CrudGenerator {
         String modelSimpleName = modelClass.getSimpleName();
 
         // Crear los directorios si no existen, recibe el nombre del paquete por parámetro
-//        createDirectories(packageName);
+        //createDirectories(packageName);
+
         //Generar el archivo repositorio
         generateRepository(packageName, modelSimpleName);
 
@@ -40,10 +41,10 @@ public class CrudGenerator {
         generateInterfaceService(packageName, modelSimpleName);
 
         //Método para crear la clase en service
-        //generateService(packageName, modelSimpleName);
+        generateService(packageName, modelSimpleName);
 
 //        //Generar el archivo controller
-        //generateController(packageName, modelSimpleName);
+        generateController(packageName, modelSimpleName);
 
         System.out.println("Nombre del paquete: " + packageName);
         System.out.println("Nombre de la clase: " + modelSimpleName);
@@ -113,7 +114,7 @@ public class CrudGenerator {
                         "public class " + modelSimpleName + "Dto {\n\n" +
                         "private final " + modelSimpleName + "Repository repository;\n\n" +
                         "public " + modelSimpleName + "Dto( " + modelSimpleName + "Repository" + " repository " + ") {\n" +
-                        "this.repository = repository;" +
+                        "this.repository = repository;\n" +
                         "}\n\n" +
                         "}";
         writeFile(packageNameUpdate.replace('.', '/'), "dto", modelSimpleName + "Dto.java", dtoContent);
@@ -139,20 +140,34 @@ public class CrudGenerator {
     }
 
 
-    //Método para generar el archivo de service
+    //Método para generar el archivo de SERVICE
     private static void generateService(String packageName, String modelSimpleName) throws IOException {
 
         String packageNameUpdate = "com.example.demo.infrastructure";
 
-        String serviceContent = "package " + packageNameUpdate + ".service;\n\n" + "import " + packageNameUpdate + ".entity" + "." + modelSimpleName + ";\n" + "import " + packageNameUpdate + ".repository." + modelSimpleName + "Repository;\n" + "import org.springframework.beans.factory.annotation.Autowired;\n" + "import org.springframework.stereotype.Service;\n\n" + "import java.util.List;\n" + "import java.util.Optional;\n\n" + "@Service\n" + "public class " + modelSimpleName + "Service {\n\n" + "    private final " + modelSimpleName + "Repository " + camelCase(modelSimpleName) + "Repository;\n\n" + "    @Autowired\n" + "    public " + modelSimpleName + "Service(" + modelSimpleName + "Repository " + camelCase(modelSimpleName) + "Repository) {\n" + "        this." + camelCase(modelSimpleName) + "Repository = " + camelCase(modelSimpleName) + "Repository;\n" + "    }\n\n" + "    " +
-                //"public List<" + modelSimpleName + "> findAll() {\n" + "        return " + camelCase(modelSimpleName) + "Repository.findAll();\n" + "    }\n\n" + "    " +
-                //"public Optional<" + modelSimpleName + "> findById(Long id) {\n" + "        return " + camelCase(modelSimpleName) +
-//                "Repository.findById(id);\n" + "    }\n\n" + "    " +
-                //"public " + modelSimpleName + " save(" + modelSimpleName + " " + camelCase(modelSimpleName) + ") {\n" + "        return " + camelCase(modelSimpleName) + "Repository.save(" + camelCase(modelSimpleName) + ");\n" + "    }\n\n" +
-//                "    public void deleteById(Long id) {\n" + "        " + camelCase(modelSimpleName) + "Repository.deleteById(id);\n" + "    }\n"
-
+        String serviceContent = "package " + packageNameUpdate + ".service;\n\n" +
+                "import " + packageNameUpdate + ".entity" + "." + modelSimpleName + ";\n" +
+                "import " + packageNameUpdate + ".repository." + modelSimpleName + "Repository;\n" +
+                "import org.springframework.beans.factory.annotation.Autowired;\n" +
+                "import org.springframework.stereotype.Service;\n\n" +
+                "import java.util.List;\n" +
+                "import java.util.Optional;\n\n" +
+                "@Service\n" + "public class " + modelSimpleName + "Service {\n\n" +
+                "    private final " + modelSimpleName + "Repository " + camelCase(modelSimpleName) + "Repository;\n\n" +
+                "    @Autowired\n" +
+                "    public " + modelSimpleName + "Service(" + modelSimpleName + "Repository " + camelCase(modelSimpleName) + "Repository) {\n\n" +
+                "        this." + camelCase(modelSimpleName) + "Repository = " + camelCase(modelSimpleName) + "Repository;\n" +
+                "    }\n\n" +
+                "public List<" + modelSimpleName + ">" + "findAll() {" +
+                "return " + camelCase(modelSimpleName) + "Repository.findAll();" +
+                "}\n\n" +
+                "public Optional<" + modelSimpleName + ">" + "getById(Long id) {\n\n" +
+                "return " + camelCase(modelSimpleName) + "Repository.findById(id);\n\n" +
+                "}\n" +
+                "public " + modelSimpleName + " save(" + (modelSimpleName + " " + camelCase(modelSimpleName)) + ")" + "{\n" +
+                "return " + camelCase(modelSimpleName) + "Repository.save( " + camelCase(modelSimpleName) + "); \n" +
+                "}\n" +
                 "}\n";
-
 
         writeFile(packageNameUpdate, "service", modelSimpleName + "Service.java", serviceContent);
     }
@@ -181,10 +196,55 @@ public class CrudGenerator {
     //----------------------------------------------------------------------------------------------------------------------
 
 
-    //Método para crear el archivo de contolller
+    //Método para generar el archivo CONTROLLER
     private static void generateController(String packageName, String modelSimpleName) throws IOException {
         String packageNameUpdate = "com.example.demo.infrastructure";
-        String controllerContent = "package " + packageNameUpdate + ".controller;\n\n" + "import " + packageNameUpdate + "." + modelSimpleName + ";\n" + "import " + packageNameUpdate + ".services." + modelSimpleName + "Service;\n" + "import org.springframework.beans.factory.annotation.Autowired;\n" + "import org.springframework.http.ResponseEntity;\n" + "import org.springframework.web.bind.annotation.*;\n\n" + "import java.util.List;\n" + "import java.util.Optional;\n\n" + "@RestController\n" + "@RequestMapping(\"/api/" + modelSimpleName.toLowerCase() + "\")\n" + "public class " + modelSimpleName + "Controller {\n\n" + "    private final " + modelSimpleName + "Service " + camelCase(modelSimpleName) + "Service;\n\n" + "    @Autowired\n" + "    public " + modelSimpleName + "Controller(" + modelSimpleName + "Service " + camelCase(modelSimpleName) + "Service) {\n" + "        this." + camelCase(modelSimpleName) + "Service = " + camelCase(modelSimpleName) + "Service;\n" + "    }\n\n" + "    @GetMapping\n" + "    public List<" + modelSimpleName + "> getAll" + modelSimpleName + "() {\n" + "        return " + camelCase(modelSimpleName) + "Service.findAll();\n" + "    }\n\n" + "    @GetMapping(\"/{id}\")\n" + "    public ResponseEntity<" + modelSimpleName + "> get" + modelSimpleName + "ById(@PathVariable Long id) {\n" + "        Optional<" + modelSimpleName + "> " + camelCase(modelSimpleName) + " = " + camelCase(modelSimpleName) + "Service.findById(id);\n" + "        if (" + camelCase(modelSimpleName) + ".isPresent()) {\n" + "            return ResponseEntity.ok(" + camelCase(modelSimpleName) + ".get());\n" + "        } else {\n" + "            return ResponseEntity.notFound().build();\n" + "        }\n" + "    }\n\n" + "    @PostMapping\n" + "    public " + modelSimpleName + " create" + modelSimpleName + "(@RequestBody " + modelSimpleName + " " + camelCase(modelSimpleName) + ") {\n" + "        return " + camelCase(modelSimpleName) + "Service.save(" + camelCase(modelSimpleName) + ");\n" + "    }\n\n" + "    @PutMapping(\"/{id}\")\n" + "    public ResponseEntity<" + modelSimpleName + "> update" + modelSimpleName + "(@PathVariable Long id, @RequestBody " + modelSimpleName + " " + camelCase(modelSimpleName) + "Details) {\n" + "        Optional<" + modelSimpleName + "> " + camelCase(modelSimpleName) + " = " + camelCase(modelSimpleName) + "Service.findById(id);\n" + "        if (" + camelCase(modelSimpleName) + ".isPresent()) {\n" + "            " + modelSimpleName + " updated" + modelSimpleName + " = " + camelCase(modelSimpleName) + ".get();\n" + "            updated" + modelSimpleName + ".setTestName(" + camelCase(modelSimpleName) + "Details.getTestName());\n" + "            return ResponseEntity.ok(" + camelCase(modelSimpleName) + "Service.save(updated" + modelSimpleName + "));\n" + "        } else {\n" + "            return ResponseEntity.notFound().build();\n" + "        }\n" + "    }\n\n" + "    @DeleteMapping(\"/{id}\")\n" + "    public ResponseEntity<Void> delete" + modelSimpleName + "(@PathVariable Long id) {\n" + "        Optional<" + modelSimpleName + "> " + camelCase(modelSimpleName) + " = " + camelCase(modelSimpleName) + "Service.findById(id);\n" + "        if (" + camelCase(modelSimpleName) + ".isPresent()) {\n" + "            " + camelCase(modelSimpleName) + "Service.deleteById(id);\n" + "            return ResponseEntity.noContent().build();\n" + "        } else {\n" + "            return ResponseEntity.notFound().build();\n" + "        }\n" + "    }\n" + "}\n";
+        String controllerContent = "package " + packageNameUpdate + ".controller;\n\n" +
+                "import " + packageNameUpdate + "." + modelSimpleName + ";\n" +
+                "import " + packageNameUpdate + ".services." + modelSimpleName + "Service;\n" +
+                "import org.springframework.beans.factory.annotation.Autowired;\n" +
+                "import org.springframework.http.ResponseEntity;\n" +
+                "import org.springframework.web.bind.annotation.*;\n\n" +
+                "import java.util.List;\n" +
+                "import java.util.Optional;\n\n" +
+                "@RestController\n" +
+                "@RequestMapping(\"/api/" + modelSimpleName.toLowerCase() + "\")\n" +
+                "public class " + modelSimpleName + "Controller {\n\n" +
+                "    private final " + modelSimpleName + "Service " + camelCase(modelSimpleName) + "Service;\n\n" +
+                "    @Autowired\n" + "    public " + modelSimpleName + "Controller(" + modelSimpleName + "Service " + camelCase(modelSimpleName) + "Service) {\n" +
+                "        this." + camelCase(modelSimpleName) + "Service = " + camelCase(modelSimpleName) + "Service;\n" + "    }\n\n" +
+                "    @GetMapping\n" + "    public List<" + modelSimpleName + "> getAll" + modelSimpleName + "() {\n" +
+                "        return " + camelCase(modelSimpleName) + "Service.findAll();\n" + "    }\n\n" +
+                "    @GetMapping(\"/{id}\")\n" + "    public ResponseEntity<" + modelSimpleName + "> get" + modelSimpleName +
+                "ById(@PathVariable Long id) {\n" +
+                "        Optional<" + modelSimpleName + "> " + camelCase(modelSimpleName) + " = " + camelCase(modelSimpleName) + "Service.findById(id);\n" +
+                "        if (" + camelCase(modelSimpleName) + ".isPresent()) {\n" +
+                "            return ResponseEntity.ok(" + camelCase(modelSimpleName) + ".get());\n" +
+                "        } else {\n" +
+                "            return ResponseEntity.notFound().build();\n" +
+                "        }\n" + "    }\n\n" +
+                "    @PostMapping\n" +
+                "    public " + modelSimpleName + " create" + modelSimpleName + "(@RequestBody " + modelSimpleName + " " + camelCase(modelSimpleName) + ") {\n" +
+                "        return " + camelCase(modelSimpleName) + "Service.save(" + camelCase(modelSimpleName) + ");\n" +
+                "    }\n\n" +
+                "    @PutMapping(\"/{id}\")\n" + "    public ResponseEntity<" + modelSimpleName + "> update" + modelSimpleName +
+                "(@PathVariable Long id, @RequestBody " + modelSimpleName + " " + camelCase(modelSimpleName) + "Details) {\n" +
+                "        Optional<" + modelSimpleName + "> " + camelCase(modelSimpleName) + " = " + camelCase(modelSimpleName) +
+                "Service.findById(id);\n" +
+                "        if (" + camelCase(modelSimpleName) + ".isPresent()) {\n" + "            " + modelSimpleName + " updated" + modelSimpleName + " = " + camelCase(modelSimpleName) + ".get();\n" +
+                "            updated" + modelSimpleName + ".setTestName(" + camelCase(modelSimpleName) + "Details.getTestName());\n" + "            return ResponseEntity.ok(" + camelCase(modelSimpleName) + "Service.save(updated" + modelSimpleName + "));\n" +
+                "        } else {\n" +
+                "            return ResponseEntity.notFound().build();\n" + "        }\n" +
+                "    }\n\n" +
+                "    @DeleteMapping(\"/{id}\")\n" +
+                "    public ResponseEntity<Void> delete" + modelSimpleName +
+                "(@PathVariable Long id) {\n" +
+                "        Optional<" + modelSimpleName + "> " + camelCase(modelSimpleName) + " = " + camelCase(modelSimpleName) + "Service.findById(id);\n" +
+                "        if (" + camelCase(modelSimpleName) + ".isPresent()) {\n" + "            " + camelCase(modelSimpleName) + "Service.deleteById(id);\n" +
+                "            return ResponseEntity.noContent().build();\n" + "        } else {\n" +
+                "            return ResponseEntity.notFound().build();\n" + "        }\n" +
+                "    }\n" +
+                "}\n";
 
         writeFile(packageNameUpdate, "controller", modelSimpleName + "Controller.java", controllerContent);
     }

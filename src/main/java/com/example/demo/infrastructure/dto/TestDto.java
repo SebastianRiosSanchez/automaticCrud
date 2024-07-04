@@ -10,6 +10,7 @@ public class TestDto {
 private final TestRepository repository;
 
 public TestDto( TestRepository repository ) {
-this.repository = repository;}
+this.repository = repository;
+}
 
 }
