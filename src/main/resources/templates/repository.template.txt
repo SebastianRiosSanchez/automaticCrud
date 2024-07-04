@@ -1,0 +1,8 @@
+package {{PACKAGE_NAME}};
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface {{CLASS_NAME}}Repository extends JpaRepository<{{CLASS_NAME}}, Long> {
+}

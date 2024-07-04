@@ -1,0 +1,36 @@
+package {{PACKAGE_NAME}};
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/{{CLASS_NAME | lower}}")
+public class {{CLASS_NAME}}Controller {
+
+    @Autowired
+    private {{CLASS_NAME}}Service service;
+
+    @GetMapping
+    public List<{{CLASS_NAME}}> getAll() {
+        return service.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public {{CLASS_NAME}} getById(@PathVariable Long id) {
+        return service.getById(id);
+    }
+
+    @PostMapping
+    public {{CLASS_NAME}} save(@RequestBody {{CLASS_NAME}} entity) {
+        return service.save(entity);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+}

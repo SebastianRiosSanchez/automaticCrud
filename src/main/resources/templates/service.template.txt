@@ -1,0 +1,29 @@
+package {{PACKAGE_NAME}};
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class {{CLASS_NAME}}Service {
+
+    @Autowired
+    private {{CLASS_NAME}}Repository repository;
+
+    public List<{{CLASS_NAME}}> getAll() {
+        return repository.findAll();
+    }
+
+    public {{CLASS_NAME}} getById(Long id) {
+        return repository.findById(id).orElse(null);
+    }
+
+    public {{CLASS_NAME}} save({{CLASS_NAME}} entity) {
+        return repository.save(entity);
+    }
+
+    public void delete(Long id) {
+        repository.deleteById(id);
+    }
+}
