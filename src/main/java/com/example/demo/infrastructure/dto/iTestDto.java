@@ -7,9 +7,9 @@ import java.util.Optional;
 public interface  iTestDto
  {
 
+Test save(Test test);
      List<Test> findAll();
-     Optional<Test> getById(Long id);
-    Optional<Test> save(Test test);
+     Optional<Test> findById(Long id);
      void deleteById(Long id);
 
 }

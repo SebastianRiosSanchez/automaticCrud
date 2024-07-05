@@ -38,13 +38,13 @@ public class CrudGenerator {
         generateDto(packageName, modelSimpleName);
 
         //Método para crear la interfaz de Service
-        generateInterfaceService(packageName, modelSimpleName);
+        //generateInterfaceService(packageName, modelSimpleName);
 
         //Método para crear la clase en service
-        generateService(packageName, modelSimpleName);
+        //generateService(packageName, modelSimpleName);
 
 //        //Generar el archivo controller
-        generateController(packageName, modelSimpleName);
+        //generateController(packageName, modelSimpleName);
 
         System.out.println("Nombre del paquete: " + packageName);
         System.out.println("Nombre de la clase: " + modelSimpleName);
@@ -70,8 +70,8 @@ public class CrudGenerator {
         String packageNameUpdate = "com.example.demo.infrastructure";
         String repositoryContent = "package " + packageNameUpdate + ".repository;\n\n" +
                 "import " + packageName + "." + modelSimpleName + ";\n" +
-                "import org.springframework.stereotype.Repository;\n\n" +
-                "import org.springframework.data.jpa.repository.JpaRepository;\n" +
+                "import org.springframework.stereotype.Repository;\n" +
+                "import org.springframework.data.jpa.repository.JpaRepository;\n\n" +
                 "@Repository\n" +
                 "public interface " + modelSimpleName + "Repository extends JpaRepository<" + modelSimpleName + "," + dataType + "> {\n" + "}\n";
 
@@ -84,10 +84,51 @@ public class CrudGenerator {
         String interfaceDtoContent = "package " + packageNameUpdate + ".dto;\n\n" +
                 "import " + packageName + "." + modelSimpleName + ";\n" +
                 "import java.util.List;\n" +
-                "import java.util.Optional;\n\n" + "public interface " + " i" + modelSimpleName + "Dto\n" + " {\n\n" + "     List<" + modelSimpleName + "> findAll();\n" +
-                "     Optional<" + modelSimpleName + "> getById(Long id);\n" + "    Optional<" + modelSimpleName + "> save(" + modelSimpleName + " " + camelCase(modelSimpleName) + ");\n" + "     void deleteById(Long id);\n\n" + "}\n";
+                "import java.util.Optional;\n\n" +
+                "public interface " + " i" + modelSimpleName + "Dto\n" +
+                " {\n\n" +
+                modelSimpleName + " save(" + modelSimpleName + " " + camelCase(modelSimpleName) + ");\n" +
+                "     List<" + modelSimpleName + "> findAll();\n" +
+                "     Optional<" + modelSimpleName + "> findById(Long id);\n" +
+                "     void deleteById(Long id);\n\n" +
+
+                "}\n";
 
         writeFile(packageNameUpdate.replace('.', '/'), "dto", "i" + modelSimpleName + "Dto.java", interfaceDtoContent);
+    }
+
+    // Método para generar la clase DTO que va a implementar la interfaz DTO
+    private static void generateDto(String packageName, String modelSimpleName) throws ClassNotFoundException, IOException {
+        String packageNameUpdate = "com.example.demo.infrastructure";
+        String dtoContent =
+                "package " + packageNameUpdate + ".dto;\n\n" +
+                        "import " + packageName + "." + modelSimpleName + ";\n" +
+                        "import org.springframework.stereotype.Component;\n\n" +
+                        "import com.example.demo.infrastructure.repository." + modelSimpleName + "Repository;\n\n" +
+                        "@Component\n" +
+                        "public class " + modelSimpleName + "Dto  implements  i" + modelSimpleName + "Dto" + "{\n\n" +
+                        "private final " + modelSimpleName + "Repository repository;\n\n" +
+                        "public " + modelSimpleName + "Dto( " + modelSimpleName + "Repository" + " repository " + ") {\n" +
+                        "this.repository = repository;\n" +
+                        "}\n\n" +
+                        "@Override\n" +
+                        "public " + modelSimpleName + " save(" + modelSimpleName + " " + camelCase(modelSimpleName) + ") {\n" +
+                        "return repository.save(" + camelCase(modelSimpleName) + ");\n" +
+                        "}\n\n" +
+                        "@Override\n" +
+                        "public List<" + modelSimpleName + "> findAll() {\n" +
+                        "return repository.findAll();\n" +
+                        "}\n\n" +
+                        "@Override\n" +
+                        "public Optional<" + modelSimpleName + "> findById(Long id) {\n" +
+                        "return repository.findById(id);\n" +
+                        "}\n\n" +
+                        "@Override\n" +
+                        "public void deleteById(Long id) {\n" +
+                        "repository.deleteById(id);\n" +
+                        "}\n\n" +
+                        "}";
+        writeFile(packageNameUpdate.replace('.', '/'), "dto", modelSimpleName + "Dto.java", dtoContent);
     }
 
     //Método para dar formato a los nombres
@@ -102,23 +143,6 @@ public class CrudGenerator {
         try (FileWriter fileWriter = new FileWriter(file)) {
             fileWriter.write(content);
         }
-    }
-
-    // Método para generar la clase DTO que va a implementar la interfaz DTO
-    private static void generateDto(String packageName, String modelSimpleName) throws ClassNotFoundException, IOException {
-        String packageNameUpdate = "com.example.demo.infrastructure";
-        String dtoContent =
-                "package " + packageNameUpdate + ".dto;\n\n" +
-                        "import org.springframework.stereotype.Component;\n\n" +
-                        "import com.example.demo.infrastructure.repository." + modelSimpleName + "Repository;\n\n" +
-                        "@Component\n" +
-                        "public class " + modelSimpleName + "Dto {\n\n" +
-                        "private final " + modelSimpleName + "Repository repository;\n\n" +
-                        "public " + modelSimpleName + "Dto( " + modelSimpleName + "Repository" + " repository " + ") {\n" +
-                        "this.repository = repository;\n" +
-                        "}\n\n" +
-                        "}";
-        writeFile(packageNameUpdate.replace('.', '/'), "dto", modelSimpleName + "Dto.java", dtoContent);
     }
 
 
@@ -149,24 +173,26 @@ public class CrudGenerator {
         String serviceContent = "package " + packageNameUpdate + ".service;\n\n" +
                 "import " + packageNameUpdate + ".entity" + "." + modelSimpleName + ";\n" +
                 "import " + packageNameUpdate + ".repository." + modelSimpleName + "Repository;\n" +
+                "import " + packageNameUpdate + ".dto." + modelSimpleName + "Dto;\n" +
                 "import org.springframework.beans.factory.annotation.Autowired;\n" +
                 "import org.springframework.stereotype.Service;\n\n" +
                 "import java.util.List;\n" +
                 "import java.util.Optional;\n\n" +
                 "@Service\n" + "public class " + modelSimpleName + "Service {\n\n" +
-                "    private final " + modelSimpleName + "Repository " + camelCase(modelSimpleName) + "Repository;\n\n" +
+                //"    private final " + modelSimpleName + "Repository " + camelCase(modelSimpleName) + "Repository;\n\n" +
+                "    private final " + modelSimpleName + "Dto " + camelCase(modelSimpleName) + "Dto;\n\n" +
                 "    @Autowired\n" +
-                "    public " + modelSimpleName + "Service(" + modelSimpleName + "Repository " + camelCase(modelSimpleName) + "Repository) {\n\n" +
-                "        this." + camelCase(modelSimpleName) + "Repository = " + camelCase(modelSimpleName) + "Repository;\n" +
+                "    public " + modelSimpleName + "Service(" + modelSimpleName + "Dto " + camelCase(modelSimpleName) + "Dto) {\n\n" +
+                "        this." + camelCase(modelSimpleName) + "Dto = " + camelCase(modelSimpleName) + "Dto;\n" +
                 "    }\n\n" +
                 "public List<" + modelSimpleName + ">" + "findAll() {" +
-                "return " + camelCase(modelSimpleName) + "Repository.findAll();" +
+                "return " + camelCase(modelSimpleName) + "Dto.findAll();" +
                 "}\n\n" +
                 "public Optional<" + modelSimpleName + ">" + "getById(Long id) {\n\n" +
-                "return " + camelCase(modelSimpleName) + "Repository.findById(id);\n\n" +
+                "return " + camelCase(modelSimpleName) + "Dto.findById(id);\n\n" +
                 "}\n" +
                 "public " + modelSimpleName + " save(" + (modelSimpleName + " " + camelCase(modelSimpleName)) + ")" + "{\n" +
-                "return " + camelCase(modelSimpleName) + "Repository.save( " + camelCase(modelSimpleName) + "); \n" +
+                "return " + camelCase(modelSimpleName) + "Dto.save( " + camelCase(modelSimpleName) + "); \n" +
                 "}\n" +
                 "}\n";
 
