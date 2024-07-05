@@ -1,7 +1,7 @@
 package com.example.demo.infrastructure.controller;
 
-import com.example.demo.infrastructure.Test;
-import com.example.demo.infrastructure.services.TestService;
+import com.example.demo.infrastructure.entity.Test;
+import com.example.demo.infrastructure.service.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +27,7 @@ public class TestController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Test> getTestById(@PathVariable Long id) {
-        Optional<Test> test = testService.findById(id);
+        Optional<Test> test = testService.getById(id);
         if (test.isPresent()) {
             return ResponseEntity.ok(test.get());
         } else {
@@ -42,7 +42,7 @@ public class TestController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Test> updateTest(@PathVariable Long id, @RequestBody Test testDetails) {
-        Optional<Test> test = testService.findById(id);
+        Optional<Test> test = testService.getById(id);
         if (test.isPresent()) {
             Test updatedTest = test.get();
             updatedTest.setTestName(testDetails.getTestName());
@@ -52,14 +52,4 @@ public class TestController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTest(@PathVariable Long id) {
-        Optional<Test> test = testService.findById(id);
-        if (test.isPresent()) {
-            testService.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
 }

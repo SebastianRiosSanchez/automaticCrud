@@ -19,17 +19,14 @@ public class TestService {
         this.testRepository = testRepository;
     }
 
-    public List<Test> findAll() {
-        return testRepository.findAll();
-    }
+public List<Test>findAll() {return testRepository.findAll();}
 
-    public Optional<Test> getById(Long id) {
+public Optional<Test>getById(Long id) {
 
-        return testRepository.findById(id);
+return testRepository.findById(id);
 
-    }
-
-    public Test save(Test test) {
-        return testRepository.save(test);
-    }
+}
+public Test save(Test test){
+return testRepository.save( test); 
+}
 }

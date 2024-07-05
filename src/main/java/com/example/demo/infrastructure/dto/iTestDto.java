@@ -8,7 +8,7 @@ public interface  iTestDto
  {
 
      List<Test> findAll();
-     Optional<Test> findById(Long id);
+     Optional<Test> getById(Long id);
     Optional<Test> save(Test test);
      void deleteById(Long id);
 
