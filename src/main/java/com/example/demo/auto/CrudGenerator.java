@@ -38,13 +38,13 @@ public class CrudGenerator {
         generateDto(packageName, modelSimpleName);
 
         //Método para crear la interfaz de Service
-        //generateInterfaceService(packageName, modelSimpleName);
+        generateInterfaceService(packageName, modelSimpleName);
 
         //Método para crear la clase en service
-        //generateService(packageName, modelSimpleName);
+        generateService(packageName, modelSimpleName);
 
 //        //Generar el archivo controller
-        //generateController(packageName, modelSimpleName);
+        generateController(packageName, modelSimpleName);
 
         System.out.println("Nombre del paquete: " + packageName);
         System.out.println("Nombre de la clase: " + modelSimpleName);
@@ -61,6 +61,7 @@ public class CrudGenerator {
         //com.example.demo.entity.Data
     }
 
+    // 1-
     //Método para generar el archivo de repositorio
     private static void generateRepository(String packageName, String modelSimpleName) throws ClassNotFoundException, IOException {
 
@@ -78,6 +79,7 @@ public class CrudGenerator {
         writeFile(packageNameUpdate, "repository", modelSimpleName + "Repository.java", repositoryContent);
     }
 
+    // 2-
     //Método para generar la Interfaz que va a implementar la CLASE DTO
     private static void generateInterfaceDto(String packageName, String modelSimpleName) throws ClassNotFoundException, IOException {
         String packageNameUpdate = "com.example.demo.infrastructure";
@@ -97,6 +99,7 @@ public class CrudGenerator {
         writeFile(packageNameUpdate.replace('.', '/'), "dto", "i" + modelSimpleName + "Dto.java", interfaceDtoContent);
     }
 
+    // 3-
     // Método para generar la clase DTO que va a implementar la interfaz DTO
     private static void generateDto(String packageName, String modelSimpleName) throws ClassNotFoundException, IOException {
         String packageNameUpdate = "com.example.demo.infrastructure";
@@ -131,6 +134,61 @@ public class CrudGenerator {
         writeFile(packageNameUpdate.replace('.', '/'), "dto", modelSimpleName + "Dto.java", dtoContent);
     }
 
+    // 4-
+    //Método para generar la interfaz de servicio
+    public static void generateInterfaceService(String packageName, String modelSimpleName) throws ClassNotFoundException, IOException {
+        String packageNameUpdate = "com.example.demo.infrastructure";
+        String interfaceServiceContent =
+                "package " + packageNameUpdate + ".service;" + "\n\n" +
+                        "import " + packageNameUpdate + ".entity." + modelSimpleName + ";\n\n" +
+                        "import java.util.List;\n" +
+                        "import java.util.Optional;\n\n" +
+                        "public interface i" + modelSimpleName + "Service" + "{\n\n" +
+                        " " + modelSimpleName + " save(" + modelSimpleName + " " + camelCase(modelSimpleName) + ");\n" +
+                        " List<" + modelSimpleName + "> findAll();\n" +
+                        " Optional<" + modelSimpleName + "> findById(Long id);\n" +
+                        "void deleteById(Long id);\n\n" +
+                        "}";
+
+        writeFile(packageNameUpdate.replace('.', '/'), "service", "i" + modelSimpleName + "Service.java", interfaceServiceContent);
+
+    }
+
+    // 5-
+    //Método para generar el archivo de SERVICE
+    private static void generateService(String packageName, String modelSimpleName) throws IOException {
+
+        String packageNameUpdate = "com.example.demo.infrastructure";
+        String serviceContent = "package " + packageNameUpdate + ".service;\n\n" +
+                "import " + packageNameUpdate + ".entity" + "." + modelSimpleName + ";\n" +
+                "import " + packageNameUpdate + ".repository." + modelSimpleName + "Repository;\n" +
+                "import " + packageNameUpdate + ".dto." + modelSimpleName + "Dto;\n" +
+                "import org.springframework.beans.factory.annotation.Autowired;\n" +
+                "import org.springframework.stereotype.Service;\n\n" +
+                "import java.util.List;\n" +
+                "import java.util.Optional;\n\n" +
+                "@Service\n" +
+                "public class " + modelSimpleName + "Service  implements i" + modelSimpleName + "Service" + "{\n\n" +
+                "    private final " + modelSimpleName + "Dto " + camelCase(modelSimpleName) + "Dto;\n\n" +
+                "    @Autowired\n" +
+                "    public " + modelSimpleName + "Service(" + modelSimpleName + "Dto " + camelCase(modelSimpleName) + "Dto) {\n\n" +
+                "        this." + camelCase(modelSimpleName) + "Dto = " + camelCase(modelSimpleName) + "Dto;\n" +
+                "    }\n\n" +
+                "public List<" + modelSimpleName + ">" + "findAll() {" +
+                "return " + camelCase(modelSimpleName) + "Dto.findAll();" +
+                "}\n\n" +
+//                "public Optional<" + modelSimpleName + ">" + "getById(Long id) {\n\n" +
+//                "return " + camelCase(modelSimpleName) + "Dto.findById(id);\n\n" +
+//                "}\n" +
+                "public " + modelSimpleName + " save(" + (modelSimpleName + " " + camelCase(modelSimpleName)) + ")" + "{\n" +
+                "return " + camelCase(modelSimpleName) + "Dto.save( " + camelCase(modelSimpleName) + "); \n" +
+                "}\n" +
+                "}\n";
+
+        writeFile(packageNameUpdate, "service", modelSimpleName + "Service.java", serviceContent);
+    }
+
+
     //Método para dar formato a los nombres
     private static String camelCase(String str) {
         return Character.toLowerCase(str.charAt(0)) + str.substring(1);
@@ -143,60 +201,6 @@ public class CrudGenerator {
         try (FileWriter fileWriter = new FileWriter(file)) {
             fileWriter.write(content);
         }
-    }
-
-
-    //Método para generar la interfaz de servicio
-    public static void generateInterfaceService(String packageName, String modelSimpleName) throws ClassNotFoundException, IOException {
-        String packageNameUpdate = "com.example.demo.infrastructure";
-        String interfaceServiceContent =
-                "package " + packageNameUpdate + ".service;" + "\n\n" +
-                        "import " + packageNameUpdate + ".entity." + modelSimpleName + ";\n\n" +
-                        "import java.util.List;\n" +
-                        "import java.util.Optional;\n\n" +
-                        "public interface i" + modelSimpleName + "Service" + "{\n\n" +
-                        " " + modelSimpleName + " save(" + modelSimpleName + " " + camelCase(modelSimpleName) + ");\n" +
-                        " List<" + modelSimpleName + "> findAll();\n" +
-                        " Optional<" + modelSimpleName + "> findById(Long id);\n\n" +
-                        "}";
-
-        writeFile(packageNameUpdate.replace('.', '/'), "service", "i" + modelSimpleName + "Service.java", interfaceServiceContent);
-
-    }
-
-
-    //Método para generar el archivo de SERVICE
-    private static void generateService(String packageName, String modelSimpleName) throws IOException {
-
-        String packageNameUpdate = "com.example.demo.infrastructure";
-
-        String serviceContent = "package " + packageNameUpdate + ".service;\n\n" +
-                "import " + packageNameUpdate + ".entity" + "." + modelSimpleName + ";\n" +
-                "import " + packageNameUpdate + ".repository." + modelSimpleName + "Repository;\n" +
-                "import " + packageNameUpdate + ".dto." + modelSimpleName + "Dto;\n" +
-                "import org.springframework.beans.factory.annotation.Autowired;\n" +
-                "import org.springframework.stereotype.Service;\n\n" +
-                "import java.util.List;\n" +
-                "import java.util.Optional;\n\n" +
-                "@Service\n" + "public class " + modelSimpleName + "Service {\n\n" +
-                //"    private final " + modelSimpleName + "Repository " + camelCase(modelSimpleName) + "Repository;\n\n" +
-                "    private final " + modelSimpleName + "Dto " + camelCase(modelSimpleName) + "Dto;\n\n" +
-                "    @Autowired\n" +
-                "    public " + modelSimpleName + "Service(" + modelSimpleName + "Dto " + camelCase(modelSimpleName) + "Dto) {\n\n" +
-                "        this." + camelCase(modelSimpleName) + "Dto = " + camelCase(modelSimpleName) + "Dto;\n" +
-                "    }\n\n" +
-                "public List<" + modelSimpleName + ">" + "findAll() {" +
-                "return " + camelCase(modelSimpleName) + "Dto.findAll();" +
-                "}\n\n" +
-                "public Optional<" + modelSimpleName + ">" + "getById(Long id) {\n\n" +
-                "return " + camelCase(modelSimpleName) + "Dto.findById(id);\n\n" +
-                "}\n" +
-                "public " + modelSimpleName + " save(" + (modelSimpleName + " " + camelCase(modelSimpleName)) + ")" + "{\n" +
-                "return " + camelCase(modelSimpleName) + "Dto.save( " + camelCase(modelSimpleName) + "); \n" +
-                "}\n" +
-                "}\n";
-
-        writeFile(packageNameUpdate, "service", modelSimpleName + "Service.java", serviceContent);
     }
 
 
@@ -246,7 +250,7 @@ public class CrudGenerator {
                         "        return " + camelCase(modelSimpleName) + "Service.findAll();\n" + "    }\n\n" +
                         "    @GetMapping(\"/{id}\")\n" + "    public ResponseEntity<" + modelSimpleName + "> get" + modelSimpleName +
                         "ById(@PathVariable Long id) {\n" +
-                        "        Optional<" + modelSimpleName + "> " + camelCase(modelSimpleName) + " = " + camelCase(modelSimpleName) + "Service.getById(id);\n" +
+                        "        Optional<" + modelSimpleName + "> " + camelCase(modelSimpleName) + " = " + camelCase(modelSimpleName) + "Service.findById(id);\n" +
                         "        if (" + camelCase(modelSimpleName) + ".isPresent()) {\n" +
                         "            return ResponseEntity.ok(" + camelCase(modelSimpleName) + ".get());\n" +
                         "        } else {\n" +
@@ -259,7 +263,7 @@ public class CrudGenerator {
                         "    @PutMapping(\"/{id}\")\n" + "    public ResponseEntity<" + modelSimpleName + "> update" + modelSimpleName +
                         "(@PathVariable Long id, @RequestBody " + modelSimpleName + " " + camelCase(modelSimpleName) + "Details) {\n" +
                         "        Optional<" + modelSimpleName + "> " + camelCase(modelSimpleName) + " = " + camelCase(modelSimpleName) +
-                        "Service.getById(id);\n" +
+                        "Service.findById(id);\n" +
                         "        if (" + camelCase(modelSimpleName) + ".isPresent()) {\n" + "            " + modelSimpleName + " updated" + modelSimpleName + " = " + camelCase(modelSimpleName) + ".get();\n" +
                         "            updated" + modelSimpleName + ".setTestName(" + camelCase(modelSimpleName) + "Details.getTestName());\n" + "            return ResponseEntity.ok(" + camelCase(modelSimpleName) + "Service.save(updated" + modelSimpleName + "));\n" +
                         "        } else {\n" +

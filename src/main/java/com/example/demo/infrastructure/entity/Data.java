@@ -19,5 +19,5 @@ public class Data {
 
     @Column(name = "desc_data", length = 100)
     private String descData;
-//    com/example/demo/infrastructure/entity/Data.java
+
 }

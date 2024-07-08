@@ -1,11 +1,11 @@
-package com.example.demo.infrastructure.dto;
+package com.example.demo.infrastructure.service;
 
 import com.example.demo.infrastructure.entity.Test;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface iTestDto {
+public interface iTestService {
 
     Test save(Test test);
 
