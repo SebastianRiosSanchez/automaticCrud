@@ -52,4 +52,14 @@ public class TestController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTest(@PathVariable Long id) {
+        Optional<Test> test = testService.findById(id);
+        if (test.isPresent()) {
+            testService.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

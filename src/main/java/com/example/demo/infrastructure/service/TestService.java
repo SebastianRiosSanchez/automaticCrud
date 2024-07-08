@@ -20,21 +20,24 @@ public class TestService implements iTestService {
         this.testDto = testDto;
     }
 
+    @Override
+    public Test save(Test testDto) {
+        return this.testDto.save(testDto);
+    }
+
+    @Override
     public List<Test> findAll() {
-        return testDto.findAll();
+        return this.testDto.findAll();
     }
 
     @Override
     public Optional<Test> findById(Long id) {
-        return Optional.empty();
+        return this.testDto.findById(id);
     }
 
     @Override
     public void deleteById(Long id) {
-
+        testDto.deleteById(id);
     }
 
-    public Test save(Test test) {
-        return testDto.save(test);
-    }
 }
