@@ -37,4 +37,13 @@ public class TestDto implements iTestDto {
         repository.deleteById(id);
     }
 
+    @Override
+    public Test update(Test test) throws Exception {
+        Optional<Test> finded = repository.findById(test.getId());
+        if (!finded.isEmpty()) {
+            return repository.save(test);
+        }
+        throw new Exception("Not found entity with id: " + test.getId());
+    }
+
 }

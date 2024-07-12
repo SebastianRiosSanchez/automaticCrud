@@ -40,4 +40,9 @@ public class TestService implements iTestService {
         testDto.deleteById(id);
     }
 
+    @Override
+    public Test update(Test test) throws Exception {
+        return testDto.update(test);
+    }
+
 }

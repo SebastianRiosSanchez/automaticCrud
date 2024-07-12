@@ -15,4 +15,6 @@ public interface iTestService {
 
     void deleteById(Long id);
 
+    Test update(Test test) throws Exception;
+
 }

@@ -15,4 +15,6 @@ public interface iTestDto {
 
     void deleteById(Long id);
 
+    Test update(Test test) throws Exception;
+
 }
